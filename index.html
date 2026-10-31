@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="description" content="臺北市藥師公會家庭藥師計畫專區改版測試版：服務介紹、收案自我檢核、家庭藥師名單與藥師作業區。">
+<title>臺北市家庭藥師計畫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 白底單頁長捲軸，細長斜切色條作為唯一裝飾語彙；民眾區在前、藥師作業區在後 */
+:root{
+  --bg:#ffffff;
+  --soft:#f4f8f7;
+  --ink:#14272c;
+  --muted:#566a6f;
+  --line:#dce6e4;
+  --teal:#0d7f73;
+  --teal-ink:#0a5e55;
+  --amber:#e0a02a;
+  --coral:#d2553f;
+  --sky:#3b7db6;
+  --ok:#2f8a4c; --warn:#b77712; --done:#7b8b8f;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --scale:1;
+  --radius:10px;
+  --maxw:1120px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1618; --soft:#152124; --ink:#e6efed; --muted:#9db0af; --line:#24363a;
+    --teal:#3cc0ab; --teal-ink:#86dccd; --amber:#efb64a; --coral:#ec7b64; --sky:#6aa7dc;
+    --ok:#5cc07a; --warn:#e6a845; --done:#7f9295; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1618; --soft:#152124; --ink:#e6efed; --muted:#9db0af; --line:#24363a;
+  --teal:#3cc0ab; --teal-ink:#86dccd; --amber:#efb64a; --coral:#ec7b64; --sky:#6aa7dc;
+  --ok:#5cc07a; --warn:#e6a845; --done:#7f9295; color-scheme:dark;
+}
+html{font-size:calc(16px * var(--scale));scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.75;font-size:1rem;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--teal-ink)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+.wrap{max-width:var(--maxw);margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;line-height:1.3;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.2rem)}
+h3{font-size:1.2rem}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.12em;color:var(--teal);text-transform:uppercase}
+.lede{color:var(--muted);max-width:40em}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* 斜切色條 */
+.strips{display:flex;gap:6px;align-items:flex-end;height:22px}
+.strips i{display:block;width:34px;height:5px;transform:skewX(-35deg);border-radius:1px}
+.strips i:nth-child(1){background:var(--teal);width:46px}
+.strips i:nth-child(2){background:var(--amber);width:22px}
+.strips i:nth-child(3){background:var(--coral);width:12px}
+.strips i:nth-child(4){background:var(--sky);width:28px}
+@media (prefers-reduced-motion: no-preference){
+  .strips.anim i{animation:slide .9s cubic-bezier(.2,.8,.2,1) both}
+  .strips.anim i:nth-child(2){animation-delay:.08s}
+  .strips.anim i:nth-child(3){animation-delay:.16s}
+  .strips.anim i:nth-child(4){animation-delay:.24s}
+  @keyframes slide{from{transform:translateX(-24px) skewX(-35deg);opacity:.2}to{transform:skewX(-35deg);opacity:1}}
+}
+
+/* 頂部工具列與導覽 */
+.util{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--muted);padding-block:8px;border-bottom:1px solid var(--line)}
+.util .left{display:flex;flex-wrap:wrap;gap:6px 16px}
+.fs{display:flex;gap:4px;align-items:center}
+.fs button{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:0 9px;cursor:pointer;line-height:1.9}
+.fs button[aria-pressed="true"]{border-color:var(--teal);color:var(--teal-ink);font-weight:700}
+header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+.mark{width:40px;height:40px;opacity:.55;flex:none}
+.brand b{font-family:var(--f-display);font-weight:400;font-size:1.15rem;display:block;line-height:1.2}
+.brand small{display:block;font-size:.72rem;color:var(--muted);letter-spacing:.08em}
+nav.main ul{list-style:none;margin:0;padding:0;display:flex;gap:4px 18px;flex-wrap:wrap}
+nav.main a{text-decoration:none;color:var(--ink);font-size:.95rem;padding:4px 0;border-bottom:2px solid transparent}
+nav.main a:hover{border-bottom-color:var(--amber)}
+nav.main a.pro{color:var(--teal-ink);font-weight:700}
+.menu-btn{display:none;font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 12px;cursor:pointer}
+@media (max-width:900px){
+  .menu-btn{display:block}
+  nav.main{position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);
+    padding:8px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+  nav.main ul{flex-direction:column}
+  nav.main a{display:block;padding:8px 0}
+}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding-block:56px 40px}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);margin-top:14px}
+.hero h1 em{font-style:normal;color:var(--teal-ink);background:linear-gradient(transparent 70%,color-mix(in srgb,var(--amber) 35%,transparent) 70%)}
+.hero .lede{margin-top:18px;font-size:1.06rem}
+.who{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;font:inherit;font-weight:700;text-decoration:none;border-radius:999px;padding:12px 22px;border:1.5px solid var(--teal);cursor:pointer}
+.btn.primary{background:var(--teal);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--teal-ink)}
+.btn small{font-weight:400;opacity:.85}
+.facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
+.facts div{min-width:0}
+.facts b{display:block;font-family:var(--f-mono);font-size:1.5rem;color:var(--ink);font-weight:600}
+.facts span{font-size:.82rem;color:var(--muted)}
+.facts-note{font-size:.75rem;color:var(--muted);margin-top:8px}
+
+/* PMR 範例卡 */
+.pmr{border:1px solid var(--line);border-radius:14px;padding:20px 20px 16px;background:var(--bg);position:relative;box-shadow:0 18px 40px -28px color-mix(in srgb,var(--ink) 45%,transparent)}
+.pmr .strips{position:absolute;top:-11px;right:22px}
+.pmr header{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px dashed var(--line);padding-bottom:10px}
+.pmr header b{font-family:var(--f-display);font-weight:400}
+.tag{font-family:var(--f-mono);font-size:.7rem;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--muted)}
+.pmr ol{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:2px}
+.pmr li{display:grid;grid-template-columns:4.6em 1fr auto;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.pmr li .t{font-size:.78rem;color:var(--muted)}
+.pmr li .d{font-family:var(--f-mono);font-size:.85rem}
+.pmr li .u{font-size:.78rem;color:var(--muted)}
+.pmr .flag{margin-top:12px;font-size:.85rem;display:flex;gap:10px;align-items:flex-start;color:var(--ink)}
+.pmr .flag i{flex:none;width:6px;height:20px;background:var(--coral);transform:skewX(-20deg);margin-top:3px}
+.pmr .sig{margin-top:10px;font-size:.75rem;color:var(--muted)}
+@media (max-width:860px){.hero{grid-template-columns:1fr;gap:32px;padding-block:36px 28px}}
+
+/* 區段 */
+section.blk{padding-block:64px;border-top:1px solid var(--line)}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:28px}
+.head > div{display:grid;gap:8px;min-width:0}
+
+/* 服務模式 tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tabs button{font:inherit;cursor:pointer;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 18px;display:flex;gap:8px;align-items:center}
+.tabs button i{width:14px;height:4px;transform:skewX(-35deg);background:var(--c,var(--teal))}
+.tabs button[aria-selected="true"]{border-color:var(--c,var(--teal));box-shadow:inset 0 0 0 1px var(--c,var(--teal));font-weight:700}
+.svc{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.svc .col{display:grid;gap:14px;align-content:start;min-width:0}
+.svc h3{display:flex;gap:10px;align-items:center}
+.svc dl{display:grid;grid-template-columns:7em 1fr;gap:10px 16px;margin:0}
+.svc dt{color:var(--muted);font-size:.88rem}
+.svc dd{margin:0}
+.svc ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
+@media (max-width:760px){.svc{grid-template-columns:1fr}.svc dl{grid-template-columns:1fr}.svc dt{margin-top:6px}}
+
+/* 自我檢核 */
+.check{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:start}
+.crit{display:grid;gap:8px}
+.crit label{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);cursor:pointer}
+.crit label:has(input:checked){border-color:var(--teal);background:color-mix(in srgb,var(--teal) 7%,var(--bg))}
+.crit input{width:1.15rem;height:1.15rem;margin-top:.3rem;accent-color:var(--teal);flex:none}
+.crit .n{font-family:var(--f-mono);color:var(--muted);font-size:.85rem;margin-right:4px}
+.result{position:sticky;top:96px;border-left:3px solid var(--line);padding:6px 0 6px 20px;display:grid;gap:12px}
+.result[data-state="yes"]{border-left-color:var(--teal)}
+.result .big{font-family:var(--f-display);font-size:1.5rem}
+.result .small{font-size:.85rem;color:var(--muted)}
+.meter{display:flex;gap:4px}
+.meter i{flex:1;height:6px;background:var(--line);transform:skewX(-35deg)}
+.meter i.on{background:var(--teal)}
+@media (max-width:820px){.check{grid-template-columns:1fr}.result{position:static}}
+
+/* 流程 */
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.flow li{position:relative;padding:22px 16px 0 0;min-width:0}
+.flow li::before{content:"";position:absolute;top:0;left:0;right:12px;height:4px;background:var(--line);transform:skewX(-35deg)}
+.flow li:first-child::before{background:var(--teal)}
+.flow .k{font-family:var(--f-mono);font-size:.78rem;color:var(--teal)}
+.flow h3{font-size:1.05rem;margin:4px 0 6px}
+.flow p{font-size:.9rem;color:var(--muted)}
+@media (max-width:900px){.flow{grid-template-columns:1fr 1fr;gap:24px}}
+@media (max-width:520px){.flow{grid-template-columns:1fr}}
+
+/* 找藥師 */
+.finder-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+.search{flex:1 1 260px;min-width:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 16px}
+.search input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.chip{font:inherit;font-size:.88rem;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:4px 12px}
+.chip b{font-family:var(--f-mono);font-weight:500;color:var(--muted);margin-left:4px;font-size:.78rem}
+.chip[aria-pressed="true"]{border-color:var(--teal);color:var(--teal-ink);font-weight:700}
+.places{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.place{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;display:grid;gap:6px;min-width:0}
+.place .d{font-size:.75rem;color:var(--teal);font-family:var(--f-mono);letter-spacing:.06em}
+.place h3{font-size:1.05rem}
+.place .ph{font-family:var(--f-mono);font-size:.9rem}
+.place .ad{font-size:.85rem;color:var(--muted)}
+.place .names{display:flex;flex-wrap:wrap;gap:6px}
+.place .names span{font-size:.82rem;border:1px solid var(--line);border-radius:4px;padding:0 6px}
+.place a.nav{font-size:.85rem;justify-self:start}
+.empty{color:var(--muted);padding:20px 0}
+.note{font-size:.8rem;color:var(--muted);margin-top:14px}
+
+/* 影音 */
+.vids{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.vid{display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:var(--ink);min-width:0}
+.vid .screen{aspect-ratio:16/9;max-width:100%;position:relative;background:var(--soft);display:grid;place-items:center;overflow:hidden}
+.vid .screen::before,.vid .screen::after{content:"";position:absolute;z-index:1;height:6px;transform:skewX(-35deg)}
+.vid .screen::before{left:-10px;bottom:18px;width:46%;background:var(--c)}
+.vid .screen::after{left:calc(46% - 2px);bottom:18px;width:12%;background:var(--amber)}
+.vid .play{width:52px;height:52px;border-radius:50%;border:2px solid var(--c);display:grid;place-items:center;transition:transform .2s}
+.vid .play svg{width:18px;height:18px;fill:var(--c);margin-left:3px}
+.vid:hover .play{transform:scale(1.08)}
+.vid .cat{position:absolute;top:10px;left:12px;font-size:.72rem;font-family:var(--f-mono);color:var(--c)}
+.vid .body{padding:12px 14px 14px;display:grid;gap:6px;align-content:start}
+.vid .body b{font-weight:500;font-size:.95rem;line-height:1.55}
+.vid .body small{color:var(--muted);font-size:.78rem}
+
+/* 故事 */
+.stories{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.story{display:grid;gap:12px;align-content:start;padding-left:20px;border-left:3px solid var(--amber)}
+.story:nth-child(2){border-left-color:var(--sky)}
+.story .when{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.story .num{font-family:var(--f-mono);font-size:2rem;color:var(--ink)}
+@media (max-width:760px){.stories{grid-template-columns:1fr}}
+
+/* 消息 */
+.news{list-style:none;margin:0;padding:0;display:grid}
+.news li{display:grid;grid-template-columns:8.5em 7.5em 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.news .dt{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.news .src{font-size:.78rem;color:var(--teal-ink)}
+@media (max-width:640px){.news li{grid-template-columns:1fr;gap:2px}}
+
+/* 藥師專區 */
+.pro-intro{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.quick{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;font-size:.9rem}
+.quick:hover{border-color:var(--teal)}
+.quick i{width:16px;height:4px;transform:skewX(-35deg);background:var(--teal);flex:none}
+.quick small{display:block;color:var(--muted);font-size:.75rem;font-family:var(--f-mono)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.panel{display:grid;gap:16px;align-content:start;min-width:0}
+.panel > h3{display:flex;align-items:center;gap:10px}
+.panel > h3::before{content:"";width:18px;height:4px;transform:skewX(-35deg);background:var(--teal)}
+
+.wizard select,.form input,.form select,.form textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;width:100%}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:s}
+.steps li{display:grid;grid-template-columns:2.2em 1fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);counter-increment:s}
+.steps li::before{content:counter(s);font-family:var(--f-mono);color:var(--teal);font-size:.95rem}
+.steps .f{font-weight:700}
+.steps .code{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-right:6px;color:var(--teal-ink)}
+.steps .how{font-size:.85rem;color:var(--muted)}
+.rules{margin:0;padding-left:1.2em;font-size:.9rem;display:grid;gap:4px}
+
+.dates{list-style:none;margin:0;padding:0;display:grid}
+.dates li{display:grid;grid-template-columns:6.2em 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.dates .dt{font-family:var(--f-mono);font-size:.85rem}
+.pill{font-size:.72rem;border-radius:999px;padding:1px 9px;border:1px solid currentColor;white-space:nowrap}
+.pill.done{color:var(--done)}
+.pill.soon{color:var(--warn);font-weight:700}
+.pill.open{color:var(--ok)}
+
+details.faq{border-bottom:1px solid var(--line)}
+details.faq summary{cursor:pointer;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:16px;font-weight:500}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+";font-family:var(--f-mono);color:var(--teal);flex:none}
+details.faq[open] summary::after{content:"−"}
+details.faq p{padding:0 0 16px;color:var(--muted);font-size:.93rem}
+.faq-tools{display:flex;gap:8px;flex-wrap:wrap}
+
+.form{display:grid;gap:12px}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.form .row{grid-template-columns:1fr}}
+.form label{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
+.form textarea{min-height:110px;resize:vertical}
+.out{border:1px dashed var(--line);border-radius:var(--radius);padding:14px;font-family:var(--f-body);font-size:.88rem;white-space:pre-wrap;word-break:break-word;color:var(--ink);background:var(--soft);max-height:260px;overflow:auto}
+.copyrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.copyrow code{font-family:var(--f-mono);font-size:.88rem;user-select:all}
+.toast{font-size:.82rem;color:var(--ok)}
+
+footer.site{border-top:1px solid var(--line);padding-block:40px 56px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:32px;font-size:.9rem}
+footer.site h3{font-size:1rem;margin-bottom:10px}
+footer.site ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+footer .sel{user-select:all;font-family:var(--f-mono);font-size:.88rem}
+footer .copy{grid-column:1/-1;font-size:.75rem;color:var(--muted)}
+@media (max-width:760px){footer.site{grid-template-columns:1fr}}
+
+*,*::before,*::after{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.beta{font-size:.8rem;text-align:center;padding-block:6px;color:var(--muted);border-bottom:1px solid var(--line)}
+.beta b{color:var(--coral);font-weight:700}
+.vid iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.vid .thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+</style>
+</head>
+<body>
+<p class="beta"><b>改版測試版</b> · 正式資訊請以 <a href="http://www.tpa.org.tw/family/index.html">臺北市藥師公會家庭藥師專區</a> 公告為準</p>
+
+<div class="util wrap" role="region" aria-label="工具列">
+  <div class="left">
+    <span>電話 <span class="tnum">(02)2551-0627</span></span>
+    <span>LINE 官方帳號 <b>@hnk2166n</b></span>
+    <a href="https://www.facebook.com/tpaorgtw" target="_blank" rel="noopener">公會 Facebook</a>
+  </div>
+  <div class="fs" role="group" aria-label="字級">
+    <span>字級</span>
+    <button type="button" data-s="1" aria-pressed="true">標準</button>
+    <button type="button" data-s="1.12" aria-pressed="false">放大</button>
+    <button type="button" data-s="1.25" aria-pressed="false">特大</button>
+  </div>
+</div>
+
+<header class="site">
+  <div class="bar wrap" style="position:relative">
+    <a class="brand" href="#top" aria-label="家庭藥師計畫首頁">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="10" fill="none" stroke="var(--teal)" stroke-width="2"/><path d="M12 28 L20 11 L28 28" fill="none" stroke="var(--teal)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.5 22 H24.5" stroke="var(--amber)" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span><b>家庭藥師計畫</b><small>臺北市藥師公會</small></span>
+    </a>
+    <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="mainNav">選單</button>
+    <nav class="main" id="mainNav" aria-label="主選單">
+      <ul>
+        <li><a href="#services">服務內容</a></li>
+        <li><a href="#check">我適合嗎</a></li>
+        <li><a href="#find">找家庭藥師</a></li>
+        <li><a href="#videos">影音專區</a></li>
+        <li><a href="#news">消息報導</a></li>
+        <li><a class="pro" href="#pharmacist">藥師作業區</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <div>
+      <div class="strips anim" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <h1>藥師走進家裡<br>把每一顆藥<em>說清楚</em></h1>
+      <p class="lede">臺北市自 105 年起推動家庭藥師制度，由臺北市藥師公會結合社區藥局與醫院藥師，到府、到長照機構、在社區藥局提供藥事照護，協助長輩與家人整理藥品、找出重複用藥與交互作用，必要時轉介醫療院所。</p>
+      <div class="who">
+        <a class="btn primary" href="#check">我是民眾或家屬 <small>看看是否適合</small></a>
+        <a class="btn ghost" href="#pharmacist">我是家庭藥師 <small>表單與時程</small></a>
+      </div>
+      <div class="facts">
+        <div><b class="tnum">105</b><span>年起推動</span></div>
+        <div><b class="tnum">4</b><span>種服務模式</span></div>
+        <div><b class="tnum">12</b><span>行政區皆有藥師</span></div>
+        <div><b class="tnum">106</b><span>人次 澎湖跨海訪視</span></div>
+      </div>
+    </div>
+    <aside class="pmr" aria-label="個人用藥紀錄範例">
+      <div class="strips" aria-hidden="true"><i></i><i></i><i></i></div>
+      <header><b>個人用藥紀錄 PMR</b><span class="tag">範例</span></header>
+      <ol>
+        <li><span class="t">早餐後</span><span class="d">Amlodipine 5 mg</span><span class="u">降血壓</span></li>
+        <li><span class="t">早晚餐後</span><span class="d">Metformin 500 mg</span><span class="u">降血糖</span></li>
+        <li><span class="t">睡前</span><span class="d">Atorvastatin 20 mg</span><span class="u">降血脂</span></li>
+        <li><span class="t">需要時</span><span class="d">Acetaminophen 500 mg</span><span class="u">止痛退燒</span></li>
+        <li><span class="t">自行購買</span><span class="d">綜合感冒藥</span><span class="u">成藥</span></li>
+      </ol>
+      <p class="flag"><i aria-hidden="true"></i><span>藥師提醒：綜合感冒藥多含 acetaminophen，與止痛藥同時服用可能超過每日建議量。</span></p>
+      <p class="sig">家庭藥師會把處方藥、成藥、中藥與保健食品整理在同一份清單上。</p>
+    </aside>
+  </section>
+
+  <section class="blk wrap" id="services">
+    <div class="head">
+      <div>
+        <span class="eyebrow">Services</span>
+        <h2>四種照護方式，依照您在哪裡生活</h2>
+        <p class="lede">在家、住在長照機構、能自行到藥局，或外出領藥不方便，都有對應的藥師服務。</p>
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="服務模式">
+      <button role="tab" id="t-home" aria-selected="true" style="--c:var(--teal)"><i></i>居家式</button>
+      <button role="tab" id="t-inst" aria-selected="false" style="--c:var(--sky)"><i></i>機構式</button>
+      <button role="tab" id="t-comm" aria-selected="false" style="--c:var(--amber)"><i></i>社區式</button>
+      <button role="tab" id="t-deli" aria-selected="false" style="--c:var(--coral)"><i></i>送藥到府</button>
+    </div>
+    <div class="svc" id="svcPanel" role="tabpanel" aria-live="polite"></div>
+  </section>
+
+  <section class="blk wrap" id="check">
+    <div class="head">
+      <div>
+        <span class="eyebrow">Self check</span>
+        <h2>家人的用藥情況，符合這些嗎</h2>
+        <p class="lede">以下為計畫收案條件，勾選符合的項目即可看到建議。結果僅供初步參考，實際是否收案由家庭藥師評估。</p>
+      </div>
+    </div>
+    <div class="check">
+      <div class="crit" id="crit"></div>
+      <div class="result" id="result" data-state="no" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="blk wrap" id="flow">
+    <div class="head">
+      <div>
+        <span class="eyebrow">How it works</span>
+        <h2>從轉介到追蹤，一位藥師陪您走完</h2>
+      </div>
+    </div>
+    <ol class="flow">
+      <li><span class="k">STEP 1</span><h3>提出需求</h3><p>由健康中心、醫療院所轉介，或直接向社區藥局與公會詢問。</p></li>
+      <li><span class="k">STEP 2</span><h3>安排藥師</h3><p>公會依行政區分案，由鄰近的家庭藥師聯繫您約定時間。</p></li>
+      <li><span class="k">STEP 3</span><h3>到府評估</h3><p>簽署服務同意書後，藥師盤點所有藥品，建立個人用藥紀錄。</p></li>
+      <li><span class="k">STEP 4</span><h3>用藥建議</h3><p>說明服用方式，處理過期與重複藥品，必要時向醫師提出建議或轉介。</p></li>
+      <li><span class="k">STEP 5</span><h3>追蹤關懷</h3><p>間隔約一個月再次訪視，確認調整後的用藥是否穩定。</p></li>
+    </ol>
+  </section>
+
+  <section class="blk wrap" id="find">
+    <div class="head">
+      <div>
+        <span class="eyebrow">Find a pharmacist</span>
+        <h2>找離您最近的家庭藥師</h2>
+        <p class="lede">依行政區篩選，或輸入藥局名稱、路名、藥師姓名搜尋。</p>
+      </div>
+    </div>
+    <div class="finder-tools">
+      <label class="search" for="q">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M20 20l-4-4" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="q" type="search" placeholder="例如：信義區、永吉路、杏安藥局" autocomplete="off">
+      </label>
+      <span class="tnum" id="count" style="color:var(--muted);font-size:.9rem"></span>
+    </div>
+    <div class="chips" id="dists" role="group" aria-label="行政區"></div>
+    <div class="places" id="places"></div>
+    <p class="note">名單引自現行家庭藥師專區公告。年度參與名單如有異動，以臺北市藥師公會最新公告為準，前往前建議先來電確認。</p>
+  </section>
+
+  <section class="blk wrap" id="videos">
+    <div class="head">
+      <div>
+        <span class="eyebrow">Videos</span>
+        <h2>影音專區</h2>
+        <p class="lede">情境短劇、合作頻道與歷年成果影片，點選後於 YouTube 開啟。</p>
+      </div>
+      <div class="chips" id="vcats" role="group" aria-label="影片分類" style="margin:0"></div>
+    </div>
+    <div class="vids" id="vids"></div>
+  </section>
+
+  <section class="blk wrap" id="stories">
+    <div class="head"><div><span class="eyebrow">Stories</span><h2>藥師看見的事</h2></div></div>
+    <div class="stories">
+      <article class="story">
+        <span class="when">機構訪視案例</span>
+        <h3>一顆被磨成粉的長效藥</h3>
+        <p>一位住在老人福利機構、患有心臟病的長輩，半夜屢次因心律不整送醫，家屬常在深夜接到機構來電。家庭藥師訪視時發現，他服用的長效型心血管藥物被磨粉後給藥，藥效釋放失去控制。調整給藥方式之後，進出醫院的循環才得以中止。</p>
+        <p style="color:var(--muted);font-size:.9rem">劑型與磨粉的問題，往往只有逐顆檢視藥品時才看得出來。</p>
+      </article>
+      <article class="story">
+        <span class="when">107 年 2 月至 3 月</span>
+        <h3>北市經驗帶到澎湖</h3>
+        <p><span class="num tnum">106</span> 人次</p>
+        <p>臺北市藥師公會與臺北市立聯合醫院的藥師團隊跨海前往澎湖，在 9 個老人關懷據點與居家個案中提供多重用藥、交互作用評估與用藥諮詢，協助當地建立在地藥事照護模式。</p>
+        <a href="http://www.tpa.org.tw/family/news2.html" target="_blank" rel="noopener">閱讀相關報導</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="blk wrap" id="news">
+    <div class="head"><div><span class="eyebrow">News</span><h2>新聞稿與報導</h2></div><a href="http://www.tpa.org.tw/family/news2.html" target="_blank" rel="noopener">全部新聞報導</a></div>
+    <ul class="news">
+      <li><span class="dt tnum">107.03.30</span><span class="src">臺北市藥師公會</span><a href="http://www.tpa.org.tw/family/paper-04.html" target="_blank" rel="noopener">活動報導：北市家藥典範佳，澎湖菊島逗陣行</a></li>
+      <li><span class="dt tnum">107.01.07</span><span class="src">臺北市藥師公會</span><a href="http://www.tpa.org.tw/family/paper-03.html" target="_blank" rel="noopener">家庭藥師計畫新聞稿</a></li>
+      <li><span class="dt tnum">107.01.07</span><span class="src">臺北市政府衛生局</span><a href="http://www.tpa.org.tw/family/paper-02.html" target="_blank" rel="noopener">家庭藥師計畫新聞稿</a></li>
+      <li><span class="dt tnum">105.05.17</span><span class="src">臺北市政府衛生局</span><a href="http://www.tpa.org.tw/family/paper-01.html" target="_blank" rel="noopener">家庭藥師制度啟動新聞稿</a></li>
+    </ul>
+  </section>
+
+  <section class="blk wrap" id="pharmacist">
+    <div class="head">
+      <div>
+        <span class="eyebrow">For pharmacists · 115 年度</span>
+        <h2>家庭藥師作業區</h2>
+        <p class="lede">選擇服務類型即可看到要填哪些表單、交到哪裡，以及本年度的重要截止日。常見問題整理自 115 年度各項注意事項。</p>
+      </div>
+    </div>
+
+    <div class="pro-intro">
+      <a class="quick" href="https://sso.health.gov.tw/" target="_blank" rel="noopener"><i></i><span>衛生局系統登打<small>sso.health.gov.tw</small></span></a>
+      <a class="quick" href="https://reurl.cc/e9ZmGj" target="_blank" rel="noopener"><i></i><span>家庭藥師計畫文件<small>表單下載</small></span></a>
+      <a class="quick" href="https://tfp.health.gov.tw/" target="_blank" rel="noopener"><i></i><span>衛生局長照系統<small>tfp.health.gov.tw</small></span></a>
+      <a class="quick" href="http://familycare.tpech.gov.tw/HOSPITAL/LOGIN.PHP" target="_blank" rel="noopener"><i></i><span>市聯醫長照系統<small>familycare.tpech</small></span></a>
+      <a class="quick" href="http://www.tpa.org.tw/family/images/108%E5%B9%B4%E5%AE%B6%E5%BA%AD%E8%97%A5%E5%B8%AB%E8%A8%88%E7%95%ABQA.pdf" target="_blank" rel="noopener"><i></i><span>108 年計畫 Q&amp;A<small>PDF</small></span></a>
+      <a class="quick" href="http://www.tpa.org.tw/family/images/114%E5%B9%B4%E5%BA%A6%E6%96%B0%E8%A8%AD%E7%AB%8B%E7%84%A1%E9%9A%9C%E7%A4%99%E8%97%A5%E5%B1%80.pdf" target="_blank" rel="noopener"><i></i><span>114 年度新設無障礙藥局<small>PDF</small></span></a>
+    </div>
+
+    <div class="grid2">
+      <div class="panel wizard">
+        <h3>表單導航</h3>
+        <label for="svcSel" style="font-size:.85rem;color:var(--muted)">我要執行的服務</label>
+        <select id="svcSel">
+          <option value="home">居家式藥事照護</option>
+          <option value="inst">機構式藥事照護</option>
+          <option value="comm">社區式藥事照護</option>
+          <option value="deli">送藥到府服務</option>
+        </select>
+        <ol class="steps" id="steps"></ol>
+        <ul class="rules" id="rules"></ul>
+      </div>
+      <div class="panel">
+        <h3>115 年度重要日程</h3>
+        <ul class="dates" id="dates"></ul>
+        <p class="note" style="margin:0">狀態依今天日期自動標示；日期以公會最新通知為準。</p>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:56px">
+      <div class="panel">
+        <h3>常見問題</h3>
+        <div class="faq-tools">
+          <label class="search" for="fq" style="flex:1 1 220px"><input id="fq" type="search" placeholder="搜尋問題，例如：報備支援" autocomplete="off"></label>
+        </div>
+        <div id="faq"></div>
+      </div>
+      <div class="panel">
+        <h3>問題回報單</h3>
+        <p style="font-size:.9rem;color:var(--muted)">找不到答案時，填寫下列欄位產生一封格式統一的信件內容，複製後寄至計畫信箱。公會可據此彙整共通問題，統一向衛生局反映。</p>
+        <form class="form" id="qform" novalidate>
+          <div class="row">
+            <label for="qName">藥師姓名<input id="qName" autocomplete="name"></label>
+            <label for="qShop">執業處所<input id="qShop"></label>
+          </div>
+          <div class="row">
+            <label for="qCat">問題類別
+              <select id="qCat">
+                <option>衛生局系統登入與登打</option>
+                <option>報備支援</option>
+                <option>收案條件與次數</option>
+                <option>表單填寫與回傳</option>
+                <option>照護費用與撥款</option>
+                <option>其他</option>
+              </select>
+            </label>
+            <label for="qSvc">服務類型
+              <select id="qSvc"><option>居家式</option><option>機構式</option><option>社區式</option><option>送藥到府</option><option>不限</option></select>
+            </label>
+          </div>
+          <label for="qBody">問題描述（請勿填寫個案姓名、身分證號等個人資料）<textarea id="qBody" placeholder="例如：登入衛生局系統後找不到居家式藥事照護的登打頁面，畫面停在……"></textarea></label>
+          <div class="copyrow">
+            <button class="btn primary" type="submit">產生信件內容</button>
+            <span class="toast" id="toast" aria-live="polite"></span>
+          </div>
+        </form>
+        <div id="outWrap" hidden>
+          <div class="out" id="out"></div>
+          <div class="copyrow" style="margin-top:10px">
+            <button class="btn ghost" type="button" id="copyBtn">複製內容</button>
+            <span>寄至 <code>tpa810@tpa.org.tw</code></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site wrap" id="contact">
+  <div>
+    <div class="strips" aria-hidden="true" style="margin-bottom:14px"><i></i><i></i><i></i><i></i></div>
+    <h3>臺北市藥師公會</h3>
+    <p>104 臺北市中山區長春路 15 號 7 樓</p>
+    <p>電話 <span class="sel">(02)2551-0627</span></p>
+    <p>公會信箱 <span class="sel">tpa@ms16.hinet.net</span></p>
+    <p>計畫信箱 <span class="sel">tpa810@tpa.org.tw</span></p>
+  </div>
+  <div>
+    <h3>民眾服務</h3>
+    <ul>
+      <li><a href="#services">服務內容</a></li>
+      <li><a href="#check">收案條件自我檢核</a></li>
+      <li><a href="#find">家庭藥師名單</a></li>
+      <li>LINE 官方帳號 <span class="sel">@hnk2166n</span></li>
+      <li><a href="https://line.me/ti/p/%40hnk2166n" target="_blank" rel="noopener">加入 LINE 好友</a></li>
+    </ul>
+  </div>
+  <div>
+    <h3>相關連結</h3>
+    <ul>
+      <li><a href="https://sso.health.gov.tw/" target="_blank" rel="noopener">衛生局系統</a></li>
+      <li><a href="https://tfp.health.gov.tw/" target="_blank" rel="noopener">衛生局長照系統</a></li>
+      <li><a href="http://familycare.tpech.gov.tw/HOSPITAL/LOGIN.PHP" target="_blank" rel="noopener">市聯醫長照系統</a></li>
+      <li><a href="https://www.facebook.com/tpaorgtw" target="_blank" rel="noopener">公會 Facebook</a></li>
+    </ul>
+  </div>
+  <p class="copy">本計畫由臺北市政府衛生局委託臺北市藥師公會辦理。頁面內容如與公會正式公告不一致，以正式公告為準。</p>
+</footer>
+
+<script>
+(function(){
+  const $ = (s, r=document) => r.querySelector(s);
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  /* 字級 */
+  const fsBtns = document.querySelectorAll('.fs button');
+  function setScale(s){
+    document.documentElement.style.setProperty('--scale', s);
+    fsBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === s)));
+    store.set('fp-scale', s);
+  }
+  fsBtns.forEach(b => b.addEventListener('click', () => setScale(b.dataset.s)));
+  const savedScale = store.get('fp-scale'); if (savedScale) setScale(savedScale);
+
+  /* 行動版選單 */
+  const menuBtn = $('#menuBtn'), nav = $('#mainNav');
+  function syncNav(){ if (window.matchMedia('(max-width:900px)').matches) nav.hidden = menuBtn.getAttribute('aria-expanded') !== 'true'; else nav.hidden = false; }
+  menuBtn.addEventListener('click', () => { menuBtn.setAttribute('aria-expanded', String(menuBtn.getAttribute('aria-expanded') !== 'true')); syncNav(); });
+  nav.addEventListener('click', e => { if (e.target.tagName === 'A' && window.matchMedia('(max-width:900px)').matches){ menuBtn.setAttribute('aria-expanded','false'); syncNav(); } });
+  window.addEventListener('resize', syncNav); syncNav();
+
+  /* 服務模式 */
+  const SVC = {
+    'home': {c:'var(--teal)', name:'居家式藥事照護',
+      who:'住在家中，有多重用藥、慢性病或用藥困擾的長輩與家人；行動不便、獨居或失能者優先。',
+      freq:'同一位民眾每年度最多 3 次，每次間隔約 1 個月。',
+      how:'由健康中心或醫療院所轉介，也可向家庭藥師或公會詢問。',
+      does:['盤點家中所有藥品，建立個人用藥紀錄','檢查重複用藥、交互作用與過期藥品','教導特殊劑型的使用方式，如吸入劑、胰島素筆','評估後向醫師提出用藥建議或轉介']},
+    'inst': {c:'var(--sky)', name:'機構式藥事照護',
+      who:'住在臺北市立案老人福利機構與長期照顧機構的住民。',
+      freq:'同一位住民每年度最多 2 次，第 2 次針對仍待解決的用藥問題，間隔約 1 個月。',
+      how:'由機構與家庭藥師聯繫，簽署機構同意書後安排訪視。',
+      does:['檢視住民用藥紀錄與給藥方式','確認磨粉、剝半等處理是否影響藥效','評估機構用藥安全管理品質','提供機構人員用藥諮詢']},
+    'comm': {c:'var(--amber)', name:'社區式藥事照護',
+      who:'能自行到社區藥局，或到日照中心等約定地點的民眾。',
+      freq:'藥物治療管理每人 1 次；用藥配合度、處方判斷性、血壓血糖照護服務每項最多 3 次。',
+      how:'到參與計畫的社區藥局，向藥師表達意願並簽署同意書。',
+      does:['藥物治療管理：回顧病史與用藥，建立用藥檔','用藥配合度諮詢：以量表評估並追蹤服藥情形','高血壓、高血糖照護與監測，數值異常時轉介就醫','處方判斷：發現處方問題時與醫師溝通']},
+    'deli': {c:'var(--coral)', name:'送藥到府服務',
+      who:'有明確用藥需求，但因失能、疾病特性或其他原因外出領藥不便的民眾，含身心障礙者。',
+      freq:'每次服務間隔至少 1 個月。',
+      how:'公會向身心障礙相關團體蒐集需求，依地區分配給家庭藥師的藥局。',
+      does:['藥師親自將藥品送到府上','交付時說明每一項藥品的用法與注意事項','必要時一併提供居家藥事照護','評估是否需要轉介社會資源']}
+  };
+  const tabMap = {'t-home':'home','t-inst':'inst','t-comm':'comm','t-deli':'deli'};
+  function renderSvc(k){
+    const s = SVC[k];
+    $('#svcPanel').innerHTML = `
+      <div class="col">
+        <h3><span class="strips" aria-hidden="true" style="height:auto"><i style="background:${s.c}"></i></span>${s.name}</h3>
+        <dl>
+          <dt>適合對象</dt><dd>${s.who}</dd>
+          <dt>服務次數</dt><dd>${s.freq}</dd>
+          <dt>如何申請</dt><dd>${s.how}</dd>
+        </dl>
+      </div>
+      <div class="col">
+        <h3>藥師會為您做什麼</h3>
+        <ul>${s.does.map(d => `<li>${d}</li>`).join('')}</ul>
+      </div>`;
+  }
+  document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    renderSvc(tabMap[t.id]);
+  }));
+  renderSvc('home');
+
+  /* 自我檢核 */
+  const CRIT = [
+    '有 2 種以上慢性病，例如高血壓、糖尿病、高血脂',
+    '長期使用慢性病處方，藥品成分達 5 種以上',
+    '領有 2 張以上慢性病連續處方箋',
+    '使用特殊劑型或操作較複雜的藥物，例如吸入劑、胰島素',
+    '曾出現疑似藥物不良反應，或有藥物過敏風險',
+    '家中剩餘未用完的藥品超過 28 天份',
+    '醫師或其他醫療專業人員建議找藥師協助'
+  ];
+  const EXTRA = [
+    {id:'x-home', t:'長輩行動不便、獨居或失能，難以自行到藥局'},
+    {id:'x-inst', t:'目前住在長照機構或老人福利機構'},
+    {id:'x-deli', t:'外出領藥有困難，需要有人送藥'}
+  ];
+  $('#crit').innerHTML = CRIT.map((c,i) => `<label for="c${i}"><input type="checkbox" id="c${i}" data-k="crit"><span><span class="n">${String(i+1).padStart(2,'0')}</span>${c}</span></label>`).join('')
+    + `<p style="font-size:.85rem;color:var(--muted);margin:10px 0 2px">生活情況（協助判斷適合的服務方式）</p>`
+    + EXTRA.map(x => `<label for="${x.id}"><input type="checkbox" id="${x.id}" data-k="extra"><span>${x.t}</span></label>`).join('');
+  function renderResult(){
+    const n = document.querySelectorAll('#crit input[data-k="crit"]:checked').length;
+    const inst = $('#x-inst').checked, home = $('#x-home').checked, deli = $('#x-deli').checked;
+    const meter = CRIT.map((_,i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('');
+    let mode = '社區式藥事照護：到參與計畫的社區藥局找家庭藥師';
+    if (inst) mode = '機構式藥事照護：請機構與家庭藥師聯繫安排';
+    else if (home) mode = '居家式藥事照護：藥師到府訪視';
+    const r = $('#result');
+    if (n === 0 && !deli){
+      r.dataset.state = 'no';
+      r.innerHTML = `<div class="meter">${meter}</div><p class="big">尚未勾選</p><p class="small">勾選左側符合的項目。符合任一項收案條件，即可請家庭藥師進一步評估。</p>`;
+      return;
+    }
+    r.dataset.state = 'yes';
+    r.innerHTML = `<div class="meter">${meter}</div>
+      <p class="big">${n > 0 ? `符合 <span class="tnum">${n}</span> 項收案條件` : '可洽詢送藥到府服務'}</p>
+      ${n > 0 ? `<p>建議方式：${mode}</p>` : ''}
+      ${deli ? '<p>另可詢問送藥到府服務，由藥師把藥送到家並當面說明用法。</p>' : ''}
+      <p class="small">下一步：在下方名單找鄰近藥師，或來電公會 <span class="tnum">(02)2551-0627</span>。是否收案以藥師評估及當年度計畫規定為準。</p>
+      <a class="btn primary" href="#find" style="justify-self:start">找家庭藥師</a>`;
+  }
+  $('#crit').addEventListener('change', renderResult); renderResult();
+
+  /* 藥師名單 */
+  const P = [
+    ['士林區','誼安藥局','許嘉恩','(02)2885-1899','臺北市士林區通河街42號'],
+    ['士林區','太和堂中西藥局','楊雅淋','(02)2881-4122','臺北市士林區大東路74號'],
+    ['士林區','加赫藥局','鄭宇軒','(02)2833-6362','臺北市士林區文昌路76號1樓'],
+    ['士林區','聖賢藥局','曹可欣','(02)2883-3046','臺北市士林區士商路58號'],
+    ['士林區','聖賢藥局','鄭宇宏','(02)2883-3046','臺北市士林區士商路58號'],
+    ['士林區','聖賢藥局','楊涵葳','(02)2883-3046','臺北市士林區士商路58號'],
+    ['士林區','佳赫藥局','曾春娟','(02)2836-7202','臺北市士林區文昌路62號'],
+    ['士林區','佳赫藥局','沈雅婷','(02)2836-7202','臺北市士林區文昌路62號'],
+    ['士林區','佳赫藥局','黃植煒','(02)2836-7202','臺北市士林區文昌路62號'],
+    ['士林區','石川藥師藥局','陳秋妤','(02)2838-5850','臺北市士林區忠義街70號1樓'],
+    ['大同區','大龍峒耳鼻喉科診所','林汝鋒','(02)2595-1475','臺北市大同區民族西路223之5號'],
+    ['大安區','臺北市立聯合醫院仁愛院區','蘇柏名','(02)2709-3600 分機8114','臺北市大安區仁愛路四段10號'],
+    ['大安區','博醫仁愛藥局','謝明玲','(02)2701-9107','臺北市大安區仁愛路4段8巷2號1樓'],
+    ['大安區','明星大藥局','陳姵諠','(02)2702-3747','臺北市大安區光復南路430之1號'],
+    ['大安區','仁華藥局','葉珠華','(02)2733-6762','臺北市大安區臥龍街155號'],
+    ['中山區','晏晟藥局','陳伶娥','(02)2585-1445','臺北市中山區林森北路625號'],
+    ['中山區','禾全藥局','周裕翔','(02)2516-5721','臺北市中山區龍江路332號'],
+    ['中正區','博醫和平藥局','葉恬君','(02)2312-0053','臺北市中正區中華路二段75巷1弄39號1樓'],
+    ['中正區','鈞安藥局','房哲民','0937-287-070','臺北市中正區中華路二段425號1樓'],
+    ['內湖區','高昱藥局','徐世輝','(02)8751-9962','臺北市內湖區陽光街321巷26號2樓之15'],
+    ['內湖區','樂齡藥師藥局','張艷玉','(02)2791-9707','臺北市內湖區內湖路三段103號'],
+    ['文山區','臺北市立萬芳醫院','姜如庭','(02)2930-7930 分機1138','臺北市文山區興隆路三段111號'],
+    ['文山區','佳醫景美藥局','廖仁睦','(02)8663-6659','臺北市文山區羅斯福路6段290號'],
+    ['文山區','統一生活事業臺北市第六十四分公司','張書鳳','(02)2934-6132','臺北市文山區興隆路三段88號'],
+    ['文山區','逸仙藥師藥局','李俊逸','(02)2931-2597','臺北市文山區興隆路2段218之1號1樓'],
+    ['文山區','逸仙藥師藥局','陳亭尹','(02)2931-2597','臺北市文山區興隆路2段218之1號1樓'],
+    ['北投區','理得藥局','蔡牧函','(02)2828-9680','臺北市北投區石牌路一段150號'],
+    ['北投區','康是美北投藥局','王俊傑','(02)2894-9542','臺北市北投區中和街249號1樓'],
+    ['北投區','關渡松藥局','楊明洲','(02)2858-4824','臺北市北投區知行路247號1樓'],
+    ['松山區','杏一台北台安藥局','高偉哲','(02)8772-8295','臺北市松山區八德路二段399號1樓'],
+    ['松山區','予志藥局','王維揚','(02)2762-3522','臺北市松山區富錦街521號'],
+    ['松山區','予志藥局','戴聖軒','(02)2762-3522','臺北市松山區富錦街521號'],
+    ['信義區','德康大藥局','吳家祥','(02)2727-2502','臺北市信義區松山路541巷21號'],
+    ['信義區','綠杏大藥局','曾光洵','(02)2758-2378','臺北市信義區吳興街241號'],
+    ['信義區','永吉藥局','蔡芳曄','(02)8787-4043','臺北市信義區永吉路213號'],
+    ['信義區','九州藥局','邵瓊慧','(02)8732-3331','臺北市信義區和平東路3段239號1樓'],
+    ['信義區','柏愛藥局','張恩豪','(02)2732-5472','臺北市信義區基隆路2段131之20號1樓'],
+    ['信義區','杏仁藥局','簡志穎','(02)2726-2541','臺北市信義區大道路135號'],
+    ['信義區','鴻濟藥局','陳佳慧','(02)2764-5331','臺北市信義區永吉路326巷2號1樓'],
+    ['信義區','濟生中西藥局','吳政億','(02)2735-8452','臺北市信義區崇德街41號'],
+    ['南港區','杏安藥局','劉濱槐','(02)2786-4119','臺北市南港區昆陽街140巷16號'],
+    ['南港區','杏安藥局','歐淑琳','(02)2786-4119','臺北市南港區昆陽街140巷16號'],
+    ['南港區','小藥師健保藥局','江芝瑩','(02)2786-7002','臺北市南港區福德街320之1號'],
+    ['萬華區','臺大醫院北護分院','李曉柔','(02)2371-7101','臺北市萬華區內江街87號'],
+    ['萬華區','正盛藥局','賴汶彣','(02)2305-0386','臺北市萬華區中華路2段434之1號']
+  ];
+  const places = [];
+  P.forEach(([d,n,who,tel,ad]) => {
+    let p = places.find(x => x.n === n && x.ad === ad);
+    if (!p){ p = {d,n,tel,ad,who:[]}; places.push(p); }
+    p.who.push(who);
+  });
+  const dists = [...new Set(places.map(p => p.d))];
+  let curD = store.get('fp-dist') || '全部';
+  if (curD !== '全部' && !dists.includes(curD)) curD = '全部';
+  function renderDists(){
+    const cnt = d => places.filter(p => d === '全部' || p.d === d).length;
+    $('#dists').innerHTML = ['全部', ...dists].map(d => `<button type="button" class="chip" data-d="${d}" aria-pressed="${d === curD}">${d}<b>${cnt(d)}</b></button>`).join('');
+  }
+  function renderPlaces(){
+    const q = $('#q').value.trim();
+    const list = places.filter(p => (curD === '全部' || p.d === curD) && (!q || (p.d + p.n + p.ad + p.who.join('')).includes(q)));
+    const ppl = list.reduce((s,p) => s + p.who.length, 0);
+    $('#count').textContent = `${list.length} 處執業處所 · ${ppl} 位藥師`;
+    $('#places').innerHTML = list.length ? list.map(p => `
+      <article class="place">
+        <span class="d">${esc(p.d)}</span>
+        <h3>${esc(p.n)}</h3>
+        <div class="names">${p.who.map(w => `<span>${esc(w)} 藥師</span>`).join('')}</div>
+        <span class="ph tnum">${esc(p.tel)}</span>
+        <span class="ad">${esc(p.ad)}</span>
+        <a class="nav" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.ad)}" target="_blank" rel="noopener">在 Google 地圖開啟</a>
+      </article>`).join('') : '<p class="empty">找不到符合的藥局，請改用行政區或路名搜尋。</p>';
+  }
+  $('#dists').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; curD = b.dataset.d; store.set('fp-dist', curD); renderDists(); renderPlaces(); });
+  $('#q').addEventListener('input', renderPlaces);
+  renderDists(); renderPlaces();
+
+  /* 影音：id 為空者連到 YouTube 搜尋結果，取得影片 ID 後填入即可直接連結 */
+  const V = [
+    {cat:'合作頻道', id:'', t:'五步驟快速整理藥櫃，過期藥品斷捨離', by:'豆豆媽咪 × 臺北市家庭藥師計畫', q:'五步驟 快速整理藥櫃 過期藥品斷捨離 豆豆媽咪'},
+    {cat:'合作頻道', id:'Ev8NxZdebL8', t:'離開家裡之後，父母突然變老了？空巢期威脅有多可怕？', by:'志祺七七'},
+    {cat:'情境短劇', id:'', t:'囤積藥物的太太：孩子深夜發燒，拿半年前的感冒藥來吃', by:'家庭藥師計畫宣導', q:'囤積藥物的太太 家庭藥師'},
+    {cat:'情境短劇', id:'', t:'阿嬤不順從服藥：用藥不服，家人超崩潰', by:'家庭藥師計畫宣導', q:'阿嬤不順從服藥 家庭藥師'},
+    {cat:'情境短劇', id:'', t:'73 歲獨居伯伯不當使用藥物，自以為是的用藥險釀危機', by:'家庭藥師計畫宣導', q:'73歲獨居老伯伯不當使用藥物'},
+    {cat:'成果紀錄', id:'', t:'107 年度成效宣導短片：照顧您全家用藥大小事', by:'臺北市藥師公會', q:'107年度 家庭藥師 成效宣導短片'},
+    {cat:'成果紀錄', id:'', t:'105 年度家庭藥師成果發表影片', by:'臺北市藥師公會', q:'105年度 家庭藥師 成果發表'},
+    {cat:'計畫宣導', id:'', t:'家庭藥師計畫宣導影片', by:'臺北市政府衛生局 · 臺北市藥師公會', q:'臺北市 家庭藥師計畫 宣導影片'}
+  ];
+  const VC = {'合作頻道':'var(--sky)','情境短劇':'var(--coral)','成果紀錄':'var(--teal)','計畫宣導':'var(--amber)'};
+  let curV = '全部';
+  function renderVids(){
+    $('#vcats').innerHTML = ['全部', ...Object.keys(VC)].map(c => `<button type="button" class="chip" data-c="${c}" aria-pressed="${c === curV}">${c}</button>`).join('');
+    $('#vids').innerHTML = V.filter(v => curV === '全部' || v.cat === curV).map(v => {
+      const href = v.id ? `https://www.youtube.com/watch?v=${v.id}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(v.q)}`;
+      return `<a class="vid" href="${href}" target="_blank" rel="noopener" style="--c:${VC[v.cat]}" data-yt="${v.id}">
+        <div class="screen">${v.id ? `<img class="thumb" alt="" loading="lazy" src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg">` : ''}<span class="cat">${v.cat}</span><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span></div>
+        <div class="body"><b>${esc(v.t)}</b><small>${esc(v.by)} · YouTube</small></div></a>`;
+    }).join('');
+  }
+  $('#vids').addEventListener('click', e => {
+    const a = e.target.closest('.vid'); if (!a || !a.dataset.yt) return;
+    e.preventDefault();
+    const s = a.querySelector('.screen');
+    s.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${a.dataset.yt}?autoplay=1" title="${a.querySelector('b').textContent}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  });
+  $('#vcats').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; curV = b.dataset.c; renderVids(); });
+  renderVids();
+
+  /* 表單導航 */
+  const W = {
+    home:{steps:[
+      ['附件3','藥師自行尋找之居家個案回報表','Email 回傳公會，由公會統一申請報備支援；健康中心派案個案由公會依行政區分案（附件2）'],
+      ['報備','報備支援','所有居家個案皆須完成報備支援，方能執行照護並撥款'],
+      ['附件9','藥事照護服務同意書','每位個案 1 份，紙本掃描後上傳衛生局系統，多次照護可沿用'],
+      ['附件10','藥事照護紀錄表','每服務人次 1 份，於衛生局系統登打'],
+      ['附件11','居家藥事照護滿意度調查表','每服務人次 1 份，於衛生局系統登打']],
+      rules:['同一個案至多照護 3 次，第 4 次起為自願照護，不提供照護費','每次照護間隔 1 個月','提報名單中 114 年度舊個案不得超過 75%','每次照護完成後一週內登打衛生局系統']},
+    inst:{steps:[
+      ['附件5','機構授權使用就醫紀錄與結果資訊同意書','先取得機構同意，掃描回傳公會；每機構 1 份'],
+      ['附件1','藥師自行尋找之老福機構回報表','Email 回傳公會，公會確認機構符合計畫範圍後通知開始'],
+      ['報備','報備支援','由藥師自行申請，核可文件於結案時回傳計畫信箱'],
+      ['附件6','長照機構用藥安全管理品質評估表','每機構 1 份，紙本或掃描'],
+      ['附件8','機構式服務照護紀錄','每服務人次 1 份，於衛生局系統登打'],
+      ['附件7','長期照護機構藥事服務滿意度調查','每機構 1 份，於衛生局系統登打']],
+      rules:['同一個案至多照護 2 次，第 3 次起為自願照護，不提供照護費','每次照護間隔 1 個月','第一波每位藥師至多提報 2 家機構，每家至多 20 名個案','結案時將附件5、附件6 與報備支援核可文件寄至 tpa810@tpa.org.tw']},
+    comm:{steps:[
+      ['附件4','藥師提報社區式個案回報表','約定地點（日照中心或特定活動）須事先提報時間與地點，由公會申請報備支援；個案到藥局收案免報備'],
+      ['附件12','藥事照護服務同意書','每位個案 1 份；執行處方判斷性或配合度服務時須上傳衛生局系統'],
+      ['附件13–14','藥物治療管理 MTM 紀錄表與滿意度調查','每位個案限 1 份，所有社區個案須先以 MTM 收案'],
+      ['附件15','處方判斷性服務紀錄','發現處方用藥問題時執行，每服務人次 1 份'],
+      ['附件16–17','ARMS 配合度量表與配合度服務紀錄','前測大於 12 分符合收案；前後測間隔 21 天，期間可追蹤 2 次'],
+      ['附件18–19','高血壓、高血糖照護與監測紀錄','已診斷且數值未在正常範圍者；無病史但數值偏高者須轉介就醫']],
+      rules:['配合度、處方判斷性、疾病照護服務每位個案各至多 3 次，同類型間隔 1 個月','每次照護完成後一週內登打衛生局系統','案件數達標時將關閉收案']},
+    deli:{steps:[
+      ['送藥-3','送藥到府服務個案資料暨轉介單','確認個案有明確用藥需求且外出領藥不便；身心障礙者須提供證明文件'],
+      ['送藥-2','送藥到府服務紀錄表','交付藥品時提供用藥指導與諮詢，紀錄完整方給付'],
+      ['送藥-1','照片使用授權書','服務紀錄需拍照時取得授權'],
+      ['送藥-4','送藥到府服務滿意度問卷','服務完成後填寫']],
+      rules:['每次服務間隔至少 1 個月','僅限執業登記於臺北市之藥事人員辦理','作業程序依全聯會藥事人員送藥到府應行注意事項','服務時一併評估社會資源轉介需求']}
+  };
+  function renderWizard(k){
+    const w = W[k];
+    $('#steps').innerHTML = w.steps.map(([c,f,h]) => `<li><div><span class="code">${c}</span><span class="f">${f}</span><div class="how">${h}</div></div></li>`).join('');
+    $('#rules').innerHTML = w.rules.map(r => `<li>${r}</li>`).join('');
+    store.set('fp-svc', k);
+  }
+  const savedSvc = store.get('fp-svc'); if (savedSvc && W[savedSvc]) $('#svcSel').value = savedSvc;
+  $('#svcSel').addEventListener('change', e => renderWizard(e.target.value));
+  renderWizard($('#svcSel').value);
+
+  /* 日程 */
+  const D = [
+    ['2026-07-19','招募說明會暨藥事照護訓練'],
+    ['2026-08-28','居家自主收案（附件3）與老福機構（附件1）回報截止'],
+    ['2026-08-31','訪視人次與系統登打達 50%'],
+    ['2026-09-30','訪視人次與系統登打達 75%'],
+    ['2026-10-12','機構式照護最終登打建檔'],
+    ['2026-10-30','訪視人次與系統登打達 100%'],
+    ['2026-11-13','訪視同意書、紀錄表及機構滿意度表單回傳'],
+    ['2026-11-20','居家式與社區式照護結案登打']
+  ];
+  const today = new Date(); today.setHours(0,0,0,0);
+  $('#dates').innerHTML = D.map(([d,t]) => {
+    const dt = new Date(d + 'T00:00:00');
+    const diff = Math.round((dt - today) / 86400000);
+    let pill = diff < 0 ? '<span class="pill done">已過</span>' : diff <= 21 ? `<span class="pill soon">剩 ${diff} 天</span>` : '<span class="pill open">尚未到期</span>';
+    if (diff === 0) pill = '<span class="pill soon">今天</span>';
+    const [y,m,dd] = d.split('-');
+    return `<li><span class="dt tnum">${Number(y)-1911}.${m}.${dd}</span><span>${t}</span>${pill}</li>`;
+  }).join('');
+
+  /* 常見問題 */
+  const F = [
+    ['個案到社區藥局收案，需要申請報備支援嗎？','不需要。個案到社區藥局由藥師收案者免報備支援。若與個案約定在日照中心或特定活動地點照護，需事先將時間與地點提報公會，由公會以藥事照護事由協助申請。'],
+    ['約定地點可以是個案家裡或住宿型機構嗎？','不行。在個案住家照護屬於居家式，住宿型機構住民屬於機構式，各自依該類別的規定收案與登打。'],
+    ['居家個案都要報備支援嗎？','是。所有居家個案都需完成報備支援才能執行照護及事後撥款。自主收案請以附件3回報公會，派案個案由公會統一申請。'],
+    ['機構的報備支援由誰申請？','機構式照護由藥師自行申請報備支援，核可文件於結案時連同附件5、附件6寄回計畫信箱。'],
+    ['同一位個案最多可以照護幾次？','居家式至多 3 次，機構式至多 2 次，超過部分屬自願照護不支付費用。社區式藥物治療管理每人 1 次，配合度、處方判斷性與疾病照護服務各至多 3 次。各類服務每次間隔 1 個月。'],
+    ['照護紀錄在哪裡登打？期限多久？','於衛生局系統（sso.health.gov.tw）登打，請在每次照護完成後一週內完成。居家請選擇居家式藥事照護分頁，約定地點的社區個案建檔時選擇「輸入住址」。'],
+    ['用藥配合度諮詢服務怎麼收案？','先以附件16 ARMS 量表前測，分數大於 12 分符合收案條件。前測與後測間隔 21 天，期間可電訪追蹤兩次，各間隔 7 天，前後測分數與追蹤內容記錄於附件17。'],
+    ['什麼情況可以收疾病照護與監測服務？','已診斷高血壓或高血糖，且數值未在正常範圍的藥物治療管理個案可收案。過去無病史但血壓偏高者也可收案，同時應轉介醫療單位進一步診斷。'],
+    ['同一家人可以一起訪視嗎？','可以。回報表的備註欄註明家人關係（例如與某某為母女），藥師可安排一同訪視。'],
+    ['機構個案有名額上限嗎？','第一波開放每位家庭藥師至多提報 2 家機構，每家至多 20 名個案。若仍有剩餘案量，公會將另行通知開放第二波。']
+  ];
+  function renderFaq(){
+    const q = $('#fq').value.trim();
+    const list = F.filter(([a,b]) => !q || (a + b).includes(q));
+    $('#faq').innerHTML = list.length ? list.map(([a,b]) => `<details class="faq"><summary>${a}</summary><p>${b}</p></details>`).join('') : '<p class="empty">沒有符合的問題，歡迎使用右側問題回報單。</p>';
+  }
+  $('#fq').addEventListener('input', renderFaq); renderFaq();
+
+  /* 問題回報單 */
+  const ids = ['qName','qShop','qCat','qSvc','qBody'];
+  try { const d = JSON.parse(store.get('fp-draft') || '{}'); ids.forEach(i => { if (d[i]) $('#' + i).value = d[i]; }); } catch(e){}
+  $('#qform').addEventListener('input', () => { const d = {}; ids.forEach(i => d[i] = $('#' + i).value); store.set('fp-draft', JSON.stringify(d)); });
+  $('#qform').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = Object.fromEntries(ids.map(i => [i, $('#' + i).value.trim()]));
+    if (!v.qBody){ $('#toast').style.color = 'var(--coral)'; $('#toast').textContent = '請先填寫問題描述'; $('#qBody').focus(); return; }
+    const d = new Date();
+    const stamp = `${d.getFullYear()-1911}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    $('#out').textContent =
+`主旨：【家庭藥師問題回報】${v.qCat}／${v.qSvc}
+
+回報日期：${stamp}
+藥師姓名：${v.qName || '（未填）'}
+執業處所：${v.qShop || '（未填）'}
+問題類別：${v.qCat}
+服務類型：${v.qSvc}
+
+問題描述：
+${v.qBody}
+
+（本內容由家庭藥師專區問題回報單產生，請勿附上個案個人資料）`;
+    $('#outWrap').hidden = false;
+    $('#toast').style.color = 'var(--ok)'; $('#toast').textContent = '已產生，請複製後寄出';
+  });
+  $('#copyBtn').addEventListener('click', () => {
+    const text = $('#out').textContent;
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($('#out')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#toast').textContent = '已選取內容，請按複製'; };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => { $('#toast').textContent = '已複製'; }, fallback);
+    } else fallback();
+  });
+})();
+</script>
+
+</body>
+</html>
